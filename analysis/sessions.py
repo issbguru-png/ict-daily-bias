@@ -24,10 +24,10 @@ def get_session_range(df_intraday: pd.DataFrame, session_name: str,
     end_time = dtime(int(end_str[:2]), int(end_str[3:]))
 
     df = df_intraday.copy()
-    # Ensure datetime is timezone-aware and convert to US/Eastern
+    # Ensure datetime is timezone-aware and convert to America/New_York
     if df["datetime"].dt.tz is None:
         df["datetime"] = df["datetime"].dt.tz_localize("UTC")
-    df["datetime_est"] = df["datetime"].dt.tz_convert("US/Eastern")
+    df["datetime_est"] = df["datetime"].dt.tz_convert("America/New_York")
     df["time_est"] = df["datetime_est"].dt.time
     df["date_est"] = df["datetime_est"].dt.date
 
