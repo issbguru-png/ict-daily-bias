@@ -77,12 +77,20 @@ async def lifespan(app: FastAPI):
 
 
 import os
-# Use CWD (which is /app in Docker, or ~/Daily locally)
-_base_dir = os.getcwd()
+# Resolve paths relative to this file: api/routes.py -> go up one level to project root
+_this_dir = os.path.dirname(os.path.abspath(__file__))
+_base_dir = os.path.dirname(_this_dir)
 _static_dir = os.path.join(_base_dir, "static")
 _templates_dir = os.path.join(_base_dir, "templates")
-logger.info("Base dir: %s | Static: %s | Templates: %s", _base_dir, _static_dir, _templates_dir)
-logger.info("Static exists: %s | Templates exists: %s", os.path.exists(_static_dir), os.path.exists(_templates_dir))
+
+# Fallback: if paths don't exist, try /app (Docker WORKDIR)
+if not os.path.exists(_static_dir):
+    _base_dir = "/app"
+    _static_dir = os.path.join(_base_dir, "static")
+    _templates_dir = os.path.join(_base_dir, "templates")
+
+logger.info("Serving static from: %s (exists=%s)", _static_dir, os.path.exists(_static_dir))
+logger.info("Serving templates from: %s (exists=%s)", _templates_dir, os.path.exists(_templates_dir))
 
 app = FastAPI(title="ICT Daily Bias Tool", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=_static_dir), name="static")
