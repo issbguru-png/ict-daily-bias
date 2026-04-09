@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Daily Bias Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <h1>ICT Daily Bias</h1>
+            <span class="subtitle">Automated Analysis</span>
+        </div>
+        <div class="header-right">
+            <span id="last-refresh" class="refresh-time">Loading...</span>
+            <button id="refresh-btn" onclick="forceRefresh()">Refresh</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="cards-grid" class="cards-grid">
+            <div class="loading">Loading instrument data...</div>
+        </div>
+
+        <div id="detail-panel" class="detail-panel hidden">
+            <div class="detail-header">
+                <h2 id="detail-symbol"></h2>
+                <div id="detail-bias-badge" class="bias-badge"></div>
+                <button class="close-btn" onclick="closeDetail()">&times;</button>
+            </div>
+            <div class="detail-body">
+                <div id="chart-container" class="chart-container"></div>
+                <div class="detail-info">
+                    <div id="factors-table" class="factors-section"></div>
+                    <div id="key-levels" class="levels-section"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/chart.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
