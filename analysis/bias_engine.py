@@ -54,10 +54,13 @@ def determine_bias(symbol: str, daily_df: pd.DataFrame,
     dol = determine_draw_on_liquidity(current_price, pools, sweeps, unfilled_fvgs)
 
     # 7. Asian manipulation (use today's date)
-    today = pd.Timestamp.now(tz="America/New_York")
     asian_manip = {"manipulation": "neutral", "detail": "No intraday data"}
-    if not h1_df.empty or not m15_df.empty:
-        asian_manip = detect_asian_manipulation(h1_df, m15_df, today)
+    try:
+        today = pd.Timestamp.now(tz="America/New_York")
+        if not h1_df.empty or not m15_df.empty:
+            asian_manip = detect_asian_manipulation(h1_df, m15_df, today)
+    except Exception as e:
+        asian_manip = {"manipulation": "neutral", "detail": f"Session analysis unavailable: {e}"}
 
     # --- Score each factor ---
     factors = {}
