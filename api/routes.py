@@ -77,11 +77,16 @@ async def lifespan(app: FastAPI):
 
 
 import os
-_base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Use CWD (which is /app in Docker, or ~/Daily locally)
+_base_dir = os.getcwd()
+_static_dir = os.path.join(_base_dir, "static")
+_templates_dir = os.path.join(_base_dir, "templates")
+logger.info("Base dir: %s | Static: %s | Templates: %s", _base_dir, _static_dir, _templates_dir)
+logger.info("Static exists: %s | Templates exists: %s", os.path.exists(_static_dir), os.path.exists(_templates_dir))
 
 app = FastAPI(title="ICT Daily Bias Tool", lifespan=lifespan)
-app.mount("/static", StaticFiles(directory=os.path.join(_base_dir, "static")), name="static")
-templates = Jinja2Templates(directory=os.path.join(_base_dir, "templates"))
+app.mount("/static", StaticFiles(directory=_static_dir), name="static")
+templates = Jinja2Templates(directory=_templates_dir)
 
 
 @app.get("/", response_class=HTMLResponse)
