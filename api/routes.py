@@ -52,8 +52,12 @@ def _refresh_all_bias_sync():
     logger.info("Bias refresh complete. Last refresh: %s", _last_refresh)
 
 
-async def _periodic_refresh():
-    """Background task to refresh bias data periodically."""
+async def _initial_load_then_periodic():
+    """Load data once on startup, then refresh periodically."""
+    try:
+        await asyncio.to_thread(_refresh_all_bias_sync)
+    except Exception as e:
+        logger.error("Initial load error: %s", e)
     while True:
         await asyncio.sleep(REFRESH_INTERVAL_SECONDS)
         try:
@@ -65,17 +69,19 @@ async def _periodic_refresh():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup: initial data load + start background refresh."""
+    """Startup: launch background data loading (non-blocking)."""
     logger.info("ICT Daily Bias Tool starting up...")
-    await asyncio.to_thread(_refresh_all_bias_sync)
-    task = asyncio.create_task(_periodic_refresh())
+    task = asyncio.create_task(_initial_load_then_periodic())
     yield
     task.cancel()
 
 
+import os
+_base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 app = FastAPI(title="ICT Daily Bias Tool", lifespan=lifespan)
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory=os.path.join(_base_dir, "static")), name="static")
+templates = Jinja2Templates(directory=os.path.join(_base_dir, "templates"))
 
 
 @app.get("/", response_class=HTMLResponse)
