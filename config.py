@@ -1,4 +1,5 @@
 """Configuration for ICT Daily Bias Tool."""
+import os
 
 # --- Instruments ---
 INSTRUMENTS = [
@@ -16,7 +17,7 @@ YFINANCE_SYMBOLS = {
 }
 
 # --- Twelve Data ---
-TWELVE_DATA_API_KEY = ""  # Set your key here or leave empty to use yfinance only
+TWELVE_DATA_API_KEY = os.environ.get("TWELVE_DATA_API_KEY", "")
 TWELVE_DATA_BASE_URL = "https://api.twelvedata.com"
 
 # --- Swing Detection ---
