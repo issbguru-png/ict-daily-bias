@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 .env
 .claude/
+infographic/node_modules/
+infographic/package-lock.json
